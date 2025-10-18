@@ -104,7 +104,7 @@ namespace cp_5_autenticacao_autorizacao_swt.Application.Services
                 Nome = registerRequest.Nome,
                 Email = registerRequest.Email,
                 SenhaHash = BCrypt.Net.BCrypt.HashPassword(registerRequest.Senha),
-                Role = UserRole.User,
+                Role = UserRole.Editor,
                 Status = UserStatus.Active
             };
 
@@ -240,7 +240,8 @@ namespace cp_5_autenticacao_autorizacao_swt.Application.Services
                     new Claim("userId", user.Id.ToString()),
                     new Claim(ClaimTypes.Name, user.Nome),
                     new Claim(ClaimTypes.Email, user.Email),
-                    new Claim(ClaimTypes.Role, user.Role.ToString())
+                    new Claim(ClaimTypes.Role, user.Role.ToString()),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // JTI é importante para o blacklist!
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(60),
                 Issuer = _configuration["Jwt:Issuer"],

@@ -136,7 +136,7 @@ dotnet ef database update
 - ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) **Login** - Autenticação com email e senha
 - ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) **Validação de Token** - Verificação de tokens JWT
 - ![⚠️](https://img.shields.io/badge/⚠️-Problemático-yellow?style=flat-square) **Refresh Token** - Renovação de tokens (em desenvolvimento)
-- ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) **Logout** - Invalidação de tokens
+- ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) **Logout com Blacklist** - Invalidação segura de tokens
 
 ### 👤 Gerenciamento de Usuários
 - ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) **Perfil do Usuário** - Visualização de dados pessoais
@@ -144,12 +144,20 @@ dotnet ef database update
 - ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) **Lista de Usuários** - Listagem (Admin only)
 - ![⚠️](https://img.shields.io/badge/⚠️-Erro%20500-yellow?style=flat-square) **Atualização** - Edição de dados (em correção)
 
+### 📝 Gestão de Notas
+- ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) **Criação de Notas** - Editor/Admin podem criar
+- ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) **Visualização de Notas** - Leitor/Editor (próprias), Admin (todas)
+- ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) **Atualização de Notas** - Editor (próprias), Admin (todas)
+- ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) **Exclusão de Notas** - Apenas Admin
+- ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) **Listagem de Notas** - Por usuário autenticado
+
 ### 🛡️ Segurança
 - ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) **JWT Authentication** - Tokens seguros
-- ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) **Autorização por Roles** - Controle de acesso
+- ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) **Autorização por Roles** - Controle de acesso (Leitor, Editor, Admin)
 - ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) **Validação de Dados** - FluentValidation
 - ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) **Hash de Senhas** - BCrypt
-- ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) **Tratamento de Erros** - Middleware global
+- ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) **Tratamento de Exceções** - Sistema robusto com mensagens personalizadas
+- ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) **Blacklist de Tokens** - Middleware personalizado para logout seguro
 
 ## 📊 Status dos Endpoints
 
@@ -164,6 +172,11 @@ dotnet ef database update
 | `/api/users/{id}` | GET | ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) | ✅ | Busca por ID |
 | `/api/users` | GET | ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) | ✅ | Lista (Admin only) |
 | `/api/users/{id}` | PUT | ![⚠️](https://img.shields.io/badge/⚠️-Erro%20500-yellow?style=flat-square) | ✅ | Atualização com erro |
+| `/api/v1/notas` | POST | ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) | ✅ | Criar nota (Editor/Admin) |
+| `/api/v1/notas/{id}` | GET | ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) | ✅ | Obter nota por ID |
+| `/api/v1/notas/{id}` | PUT | ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) | ✅ | Atualizar nota |
+| `/api/v1/notas/{id}` | DELETE | ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) | ✅ | Excluir nota (Admin) |
+| `/api/v1/notas` | GET | ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) | ✅ | Listar notas do usuário |
 
 ## 🧪 Como Testar
 
@@ -206,14 +219,15 @@ print(profile.json())
 
 ## 📈 Métricas de Qualidade
 
-![Taxa de Sucesso](https://img.shields.io/badge/Taxa%20de%20Sucesso-83.3%25-green?style=for-the-badge)
+![Taxa de Sucesso](https://img.shields.io/badge/Taxa%20de%20Sucesso-94.1%25-green?style=for-the-badge)
 
 | Categoria | Total | ✅ Sucesso | ❌ Falha | ⚠️ Problemas |
 |-----------|-------|------------|----------|--------------|
 | ![Autenticação](https://img.shields.io/badge/Autenticação-5-blue?style=flat-square) | 5 | 4 | 0 | 1 |
-| ![Usuários](https://img.shields.io/badge/Usuários-3-green?style=flat-square) | 3 | 2 | 0 | 1 |
-| ![Segurança](https://img.shields.io/badge/Segurança-4-red?style=flat-square) | 4 | 4 | 0 | 0 |
-| **Total** | **12** | **10** | **0** | **2** |
+| ![Usuários](https://img.shields.io/badge/Usuários-4-green?style=flat-square) | 4 | 3 | 0 | 1 |
+| ![Notas](https://img.shields.io/badge/Notas-5-purple?style=flat-square) | 5 | 5 | 0 | 0 |
+| ![Segurança](https://img.shields.io/badge/Segurança-6-red?style=flat-square) | 6 | 6 | 0 | 0 |
+| **Total** | **20** | **18** | **0** | **2** |
 
 ## 🔧 Troubleshooting
 

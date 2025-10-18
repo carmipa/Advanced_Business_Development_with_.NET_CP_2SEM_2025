@@ -69,6 +69,10 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<INoteService, NoteService>();
+
+// Registro do serviço de blacklist como Singleton (conforme especificado no PDF)
+builder.Services.AddSingleton<ITokenBlacklistService, InMemoryTokenBlacklistService>();
 
 // Configuração dos controllers com serialização JSON em camelCase
 builder.Services.AddControllers()
@@ -107,18 +111,20 @@ Construir o núcleo da API RESTful da SafeScribe, implementando um sistema de au
 ### 👥 **Integrantes do CP**
 | Nome | RM | GitHub |
 |------|----|---------|
-| ![Amanda](https://img.shields.io/badge/Amanda-Mesquita%20Cirino%20Da%20Silva-green?style=flat-square) | ![RM](https://img.shields.io/badge/RM-559177-blue?style=flat-square) | [![GitHub](https://img.shields.io/badge/GitHub-carmipa-black?style=flat-square&logo=github)](https://github.com/carmipa) |
-| ![Journey](https://img.shields.io/badge/Journey-Tiago%20Lopes%20Ferreira-green?style=flat-square) | ![RM](https://img.shields.io/badge/RM-556071-blue?style=flat-square) | [![GitHub](https://img.shields.io/badge/GitHub-JouTiago-black?style=flat-square&logo=github)](https://github.com/JouTiago) |
-| ![Paulo](https://img.shields.io/badge/Paulo-André%20Carminati-green?style=flat-square) | ![RM](https://img.shields.io/badge/RM-557881-blue?style=flat-square) | [![GitHub](https://img.shields.io/badge/GitHub-mandyy14-black?style=flat-square&logo=github)](https://github.com/mandyy14) |
+| Amanda Mesquita Cirino Da Silva | RM559177 | [![GitHub](https://img.shields.io/badge/GitHub-mandyy14-black?style=flat-square&logo=github)](https://github.com/mandyy14) |
+| Journey Tiago Lopes Ferreira | RM556071 | [![GitHub](https://img.shields.io/badge/GitHub-JouTiago-black?style=flat-square&logo=github)](https://github.com/JouTiago) |
+| Paulo André Carminati | RM557881 | [![GitHub](https://img.shields.io/badge/GitHub-carmipa-black?style=flat-square&logo=github)](https://github.com/carmipa) |
 
 ### 🔗 **Repositórios**
 - **Repositório CP**: [![GitHub](https://img.shields.io/badge/GitHub-Advanced%20Business%20Development-black?style=flat-square&logo=github)](https://github.com/carmipa/Advanced_Business_Development_with_.NET_CP_2SEM_2025)
 - **Repositório Projeto**: [![GitHub](https://img.shields.io/badge/GitHub-CP5%20JWT%20API-black?style=flat-square&logo=github)](https://github.com/carmipa/Advanced_Business_Development_with_.NET_CP_2SEM_2025/tree/main/cp-5-autenticacao-autorizacao-swt)
 
 ### 🔐 **Funcionalidades da API**
-- ✅ **Autenticação JWT** - Login e registro de usuários
-- ✅ **Autorização por Roles** - Controle de acesso baseado em permissões
+- ✅ **Autenticação JWT** - Login, registro e logout com blacklist
+- ✅ **Autorização por Roles** - Controle de acesso (Leitor, Editor, Admin)
 - ✅ **Refresh Tokens** - Renovação automática de tokens
+- ✅ **Gestão de Notas** - CRUD completo para documentos sensíveis
+- ✅ **Logout Avançado** - Sistema de blacklist para invalidar tokens
 - ✅ **Validação de Dados** - Validação robusta com FluentValidation
 - ✅ **Documentação Swagger** - Interface interativa para testes
 - ✅ **Logging Estruturado** - Logs detalhados com Serilog
@@ -128,7 +134,9 @@ Construir o núcleo da API RESTful da SafeScribe, implementando um sistema de au
 1. **Registre-se** usando `POST /api/auth/register`
 2. **Faça login** usando `POST /api/auth/login`
 3. **Use o token JWT** no header `Authorization: Bearer {token}`
-4. **Teste os endpoints** protegidos com autenticação
+4. **Gerencie notas** usando `POST /api/v1/notas` (Editor/Admin)
+5. **Faça logout** usando `POST /api/auth/logout` (invalida token)
+6. **Teste os endpoints** protegidos com autenticação
 
 ### 📚 **Tecnologias Utilizadas**
 ![C#](https://img.shields.io/badge/C%23-239120?style=flat-square&logo=c-sharp&logoColor=white)
@@ -193,7 +201,7 @@ var app = builder.Build();
 // Configuração da pipeline de requisições HTTP
 
 // Middleware de tratamento global de exceções (deve ser o primeiro)
-app.UseExceptionHandling();
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 // Middleware de logging de requisições HTTP
 app.UseSerilogRequestLogging();
@@ -204,6 +212,9 @@ app.UseHttpsRedirection();
 // Middleware de autenticação e autorização JWT
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Middleware personalizado para verificar tokens na blacklist (conforme especificado no PDF)
+app.UseMiddleware<JwtBlacklistMiddleware>();
 
 // Configuração do Swagger UI para documentação da API
 app.UseSwagger();

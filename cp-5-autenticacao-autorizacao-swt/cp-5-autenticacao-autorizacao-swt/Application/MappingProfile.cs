@@ -1,5 +1,6 @@
 using AutoMapper;
 using cp_5_autenticacao_autorizacao_swt.Application.DTOs.Auth;
+using cp_5_autenticacao_autorizacao_swt.Application.DTOs.Notes;
 using cp_5_autenticacao_autorizacao_swt.Domain.Entities;
 
 namespace cp_5_autenticacao_autorizacao_swt.Application
@@ -40,6 +41,28 @@ namespace cp_5_autenticacao_autorizacao_swt.Application
                 .ForMember(dest => dest.RefreshToken, opt => opt.Ignore()) // Refresh token é gerenciado pelo AuthService
                 .ForMember(dest => dest.RefreshTokenExpiryTime, opt => opt.Ignore()) // Expiração é gerenciada pelo AuthService
                 .ForMember(dest => dest.Role, opt => opt.MapFrom(src => Enum.Parse<Domain.Enums.UserRole>(src.Role)));
+
+            // Mapeamento de Note para NoteResponseDto
+            CreateMap<Note, NoteResponseDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
+                .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.Nome))
+                .ForMember(dest => dest.IsSensitive, opt => opt.MapFrom(src => src.IsSensitive))
+                .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.Tags));
+
+            // Mapeamento de CreateNoteRequestDto para Note
+            CreateMap<CreateNoteRequestDto, Note>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.UserId, opt => opt.Ignore())
+                .ForMember(dest => dest.User, opt => opt.Ignore())
+                .ForMember(dest => dest.DataCriacao, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.DataAtualizacao, opt => opt.Ignore());
         }
     }
 }

@@ -40,10 +40,10 @@ namespace cp_5_autenticacao_autorizacao_swt.Domain.Entities
         public string SenhaHash { get; set; } = string.Empty;
         
         /// <summary>
-        /// Role/perfil do usuário no sistema (User, Admin, Moderator)
+        /// Role/perfil do usuário no sistema (Leitor, Editor, Admin)
         /// </summary>
-        /// <example>User</example>
-        public UserRole Role { get; set; } = UserRole.User;
+        /// <example>Editor</example>
+        public UserRole Role { get; set; } = UserRole.Editor;
         
         /// <summary>
         /// Status atual do usuário (ativo, inativo, bloqueado, etc.)

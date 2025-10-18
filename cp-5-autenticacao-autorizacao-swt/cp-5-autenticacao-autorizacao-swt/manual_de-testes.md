@@ -242,11 +242,11 @@ POST /api/auth/register
 ```
 
 #### Teste no Swagger
-1. ![🔍](https://img.shields.io/badge/1-Abrir%20Swagger-blue?style=flat-square) Acesse [http://localhost:5210/swagger](http://localhost:5210/swagger)
-2. ![📝](https://img.shields.io/badge/2-Expandir%20POST%20auth%2Fregister-green?style=flat-square) Clique em `POST /api/auth/register`
-3. ![▶️](https://img.shields.io/badge/3-Clicar%20Try%20it%20out-orange?style=flat-square) Clique em "Try it out"
-4. ![✏️](https://img.shields.io/badge/4-Preencher%20Request%20Body-blue?style=flat-square) Cole o JSON acima
-5. ![🚀](https://img.shields.io/badge/5-Executar%20Execute-green?style=flat-square) Clique em "Execute"
+1. **Abrir Swagger**: Acesse [http://localhost:5210/swagger](http://localhost:5210/swagger)
+2. **Expandir Endpoint**: Clique em `POST /api/auth/register`
+3. **Try it out**: Clique no botão "Try it out"
+4. **Preencher Dados**: Cole o JSON acima no campo Request body
+5. **Executar**: Clique em "Execute"
 
 #### Resultado Esperado
 - **Status Code**: ![201](https://img.shields.io/badge/201-Created-green?style=flat-square)
@@ -282,11 +282,11 @@ POST /api/auth/login
 ```
 
 #### Teste no Swagger
-1. ![🔍](https://img.shields.io/badge/1-Abrir%20Swagger-blue?style=flat-square) Acesse o Swagger UI
-2. ![📝](https://img.shields.io/badge/2-Expandir%20POST%20auth%2Flogin-green?style=flat-square) Clique em `POST /api/auth/login`
-3. ![▶️](https://img.shields.io/badge/3-Try%20it%20out-orange?style=flat-square) Clique em "Try it out"
-4. ![✏️](https://img.shields.io/badge/4-Preencher%20credenciais-blue?style=flat-square) Insira email e senha
-5. ![🚀](https://img.shields.io/badge/5-Execute-green?style=flat-square) Execute a requisição
+1. **Abrir Swagger**: Acesse o Swagger UI
+2. **Expandir Endpoint**: Clique em `POST /api/auth/login`
+3. **Try it out**: Clique no botão "Try it out"
+4. **Preencher Credenciais**: Insira email e senha
+5. **Executar**: Execute a requisição
 
 #### Resultado Esperado
 - **Status Code**: ![200](https://img.shields.io/badge/200-OK-green?style=flat-square)
@@ -495,6 +495,64 @@ POST /api/auth/register
 - **Status Code**: ![400](https://img.shields.io/badge/400-Bad%20Request-red?style=flat-square)
 - **Response**: Erros de validação detalhados
 
+### 📝 Gestão de Notas
+
+#### Teste 13: Criar Nota (Editor/Admin)
+- **Endpoint**: `POST /api/v1/notas`
+- **Método**: POST
+- **Descrição**: Cria uma nova nota no sistema
+- **Autenticação**: Editor ou Admin
+- **Request Body**:
+```json
+{
+  "title": "Minha Primeira Nota",
+  "content": "Conteúdo da nota com informações importantes.",
+  "isSensitive": false,
+  "tags": "importante,trabalho"
+}
+```
+- **Status Esperado**: 201 Created
+- **Response**: Dados da nota criada
+
+#### Teste 14: Obter Nota por ID
+- **Endpoint**: `GET /api/v1/notas/{id}`
+- **Método**: GET
+- **Descrição**: Busca uma nota específica por ID
+- **Autenticação**: Leitor/Editor (próprias notas) ou Admin (todas)
+- **Status Esperado**: 200 OK ou 403 Forbidden
+- **Response**: Dados da nota ou erro de permissão
+
+#### Teste 15: Atualizar Nota
+- **Endpoint**: `PUT /api/v1/notas/{id}`
+- **Método**: PUT
+- **Descrição**: Atualiza uma nota existente
+- **Autenticação**: Editor (próprias notas) ou Admin (todas)
+- **Request Body**:
+```json
+{
+  "title": "Nota Atualizada",
+  "content": "Conteúdo atualizado da nota.",
+  "isSensitive": true,
+  "tags": "atualizada,confidencial"
+}
+```
+- **Status Esperado**: 200 OK ou 403 Forbidden
+
+#### Teste 16: Excluir Nota
+- **Endpoint**: `DELETE /api/v1/notas/{id}`
+- **Método**: DELETE
+- **Descrição**: Exclui uma nota do sistema
+- **Autenticação**: Admin apenas
+- **Status Esperado**: 204 No Content ou 403 Forbidden
+
+#### Teste 17: Listar Notas do Usuário
+- **Endpoint**: `GET /api/v1/notas`
+- **Método**: GET
+- **Descrição**: Lista todas as notas do usuário autenticado
+- **Autenticação**: Qualquer usuário autenticado
+- **Status Esperado**: 200 OK
+- **Response**: Lista de notas do usuário
+
 ---
 
 ## 📊 Relatório de Testes
@@ -503,19 +561,19 @@ POST /api/auth/register
 
 ```mermaid
 graph LR
-    subgraph Auth["🔐 Autenticação"]
-        A1[POST /register] --> A1S[✅ OK]
-        A2[POST /login] --> A2S[✅ OK]
-        A3[GET /validate] --> A3S[✅ OK]
-        A4[POST /refresh-token] --> A4S[⚠️ Problem]
-        A5[POST /logout] --> A5S[✅ OK]
+    subgraph Auth["Autenticação"]
+        A1[POST /register] --> A1S[OK]
+        A2[POST /login] --> A2S[OK]
+        A3[GET /validate] --> A3S[OK]
+        A4[POST /refresh-token] --> A4S[Problem]
+        A5[POST /logout] --> A5S[OK]
     end
     
-    subgraph Users["👤 Usuários"]
-        U1[GET /profile] --> U1S[✅ OK]
-        U2[GET /{id}] --> U2S[✅ OK]
-        U3[GET /] --> U3S[✅ OK]
-        U4[PUT /{id}] --> U4S[⚠️ Error 500]
+    subgraph Users["Usuários"]
+        U1[GET /profile] --> U1S[OK]
+        U2[GET /{id}] --> U2S[OK]
+        U3[GET /] --> U3S[OK]
+        U4[PUT /{id}] --> U4S[Error 500]
     end
     
     style A1S fill:#66bb6a
@@ -542,6 +600,11 @@ graph LR
 | `/api/users/{id}` | GET | ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) | ✅ | Busca por ID |
 | `/api/users` | GET | ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) | ✅ | Lista (Admin only) |
 | `/api/users/{id}` | PUT | ![⚠️](https://img.shields.io/badge/⚠️-Erro%20500-yellow?style=flat-square) | ✅ | Atualização com erro |
+| `/api/v1/notas` | POST | ![⚠️](https://img.shields.io/badge/⚠️-Problema-yellow?style=flat-square) | ✅ | Erro na criação (NoteService) |
+| `/api/v1/notas/{id}` | GET | ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) | ✅ | Obter nota (simulado) |
+| `/api/v1/notas/{id}` | PUT | ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) | ✅ | Atualizar nota (simulado) |
+| `/api/v1/notas/{id}` | DELETE | ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) | ✅ | Excluir nota (simulado) |
+| `/api/v1/notas` | GET | ![✅](https://img.shields.io/badge/✅-Funcionando-green?style=flat-square) | ✅ | Listar notas (simulado) |
 
 ### 📈 Métricas de Testes
 
@@ -560,39 +623,39 @@ graph LR
 
 ```mermaid
 gantt
-    title Cronograma de Testes - SafeScribe API
-    dateFormat  YYYY-MM-DD
+    title Cronograma de Testes SafeScribe API
+    dateFormat YYYY-MM-DD
     section Setup
-    Configuração Ambiente    :done, setup, 2025-10-18, 1d
-    Criação Banco Dados      :done, db, after setup, 1d
+    Configuracao Ambiente    :done, setup, 2025-10-18, 1d
+    Criacao Banco Dados      :done, db, after setup, 1d
     
-    section Autenticação
+    section Autenticacao
     Teste Registro           :done, reg, after db, 1d
     Teste Login              :done, login, after reg, 1d
-    Teste Validação Token    :done, validate, after login, 1d
+    Teste Validacao Token    :done, validate, after login, 1d
     Teste Refresh Token      :active, refresh, after validate, 1d
     Teste Logout             :done, logout, after refresh, 1d
     
-    section Usuários
+    section Usuarios
     Teste Perfil             :done, profile, after logout, 1d
     Teste Busca por ID       :done, getid, after profile, 1d
-    Teste Lista Usuários     :done, list, after getid, 1d
-    Teste Atualização        :crit, update, after list, 1d
+    Teste Lista Usuarios     :done, list, after getid, 1d
+    Teste Atualizacao        :crit, update, after list, 1d
     
-    section Segurança
-    Teste Token Inválido     :done, invalid, after update, 1d
-    Teste Credenciais Inválidas :done, creds, after invalid, 1d
+    section Seguranca
+    Teste Token Invalido     :done, invalid, after update, 1d
+    Teste Credenciais Invalidas :done, creds, after invalid, 1d
     Teste Email Duplicado    :done, duplicate, after creds, 1d
-    Teste Validação Dados    :done, validation, after duplicate, 1d
+    Teste Validacao Dados    :done, validation, after duplicate, 1d
 ```
 
 ### 🏆 Resultados por Categoria
 
 ```mermaid
-pie title Distribuição de Status dos Testes
-    "✅ Sucesso (83.3%)" : 10
-    "⚠️ Problemas (16.7%)" : 2
-    "❌ Falhas (0%)" : 0
+pie title Distribuicao de Status dos Testes
+    "Sucesso (83.3%)" : 10
+    "Problemas (16.7%)" : 2
+    "Falhas (0%)" : 0
 ```
 
 ---

@@ -20,17 +20,20 @@ namespace cp_5_autenticacao_autorizacao_swt.Presentation.Controllers
         private readonly IAuthService _authService;
         private readonly IValidator<LoginRequestDto> _loginValidator;
         private readonly IValidator<RegisterRequestDto> _registerValidator;
+        private readonly ITokenBlacklistService _tokenBlacklistService;
         private readonly ILogger<AuthController> _logger;
 
         public AuthController(
             IAuthService authService,
             IValidator<LoginRequestDto> loginValidator,
             IValidator<RegisterRequestDto> registerValidator,
+            ITokenBlacklistService tokenBlacklistService,
             ILogger<AuthController> logger)
         {
             _authService = authService;
             _loginValidator = loginValidator;
             _registerValidator = registerValidator;
+            _tokenBlacklistService = tokenBlacklistService;
             _logger = logger;
         }
 
@@ -199,54 +202,6 @@ namespace cp_5_autenticacao_autorizacao_swt.Presentation.Controllers
             }
         }
 
-        /// <summary>
-        /// Realiza logout do usuário autenticado
-        /// </summary>
-        /// <remarks>
-        /// Este endpoint permite que um usuário autenticado faça logout do sistema.
-        /// O refresh token do usuário será invalidado, impedindo futuras renovações de token.
-        /// Requer autenticação via token JWT válido.
-        /// 
-        /// Exemplo de requisição:
-        /// ```
-        /// POST /api/auth/logout
-        /// Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-        /// ```
-        /// </remarks>
-        /// <returns>Confirmação do logout realizado com sucesso</returns>
-        /// <response code="200">Logout realizado com sucesso. Refresh token invalidado</response>
-        /// <response code="401">Token JWT inválido ou expirado</response>
-        /// <response code="500">Erro interno do servidor durante o logout</response>
-        [HttpPost("logout")]
-        [Authorize]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(500)]
-        public async Task<IActionResult> Logout()
-        {
-            try
-            {
-                var userIdClaim = User.FindFirst("userId");
-                if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-                {
-                    return Unauthorized(new { message = "Token inválido" });
-                }
-
-                var result = await _authService.LogoutAsync(userId);
-                if (!result)
-                {
-                    return BadRequest(new { message = "Erro ao realizar logout" });
-                }
-
-                _logger.LogInformation("Logout realizado com sucesso para usuário: {UserId}", userId);
-                return Ok(new { message = "Logout realizado com sucesso" });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Erro ao realizar logout");
-                return StatusCode(500, new { message = "Erro interno do servidor" });
-            }
-        }
 
         /// <summary>
         /// Valida se o token JWT é válido e retorna informações do usuário
@@ -282,6 +237,60 @@ namespace cp_5_autenticacao_autorizacao_swt.Presentation.Controllers
                 email = email,
                 role = role
             });
+        }
+
+        /// <summary>
+        /// Realiza logout do usuário invalidando o token atual
+        /// </summary>
+        /// <remarks>
+        /// Este endpoint implementa logout avançado com blacklist de tokens.
+        /// O token JWT atual é adicionado à lista negra, impedindo seu reuso.
+        /// 
+        /// **Funcionalidade Avançada**: Este endpoint resolve o problema de tokens JWT
+        /// serem "stateless" por natureza, permitindo invalidar tokens antes da expiração.
+        /// 
+        /// Exemplo de uso:
+        /// ```
+        /// POST /api/auth/logout
+        /// Authorization: Bearer {token}
+        /// ```
+        /// </remarks>
+        /// <returns>Mensagem de confirmação do logout</returns>
+        /// <response code="200">Logout realizado com sucesso</response>
+        /// <response code="401">Token inválido ou não fornecido</response>
+        [HttpPost("logout")]
+        [Authorize]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> Logout()
+        {
+            try
+            {
+                // Extrai o JTI (JWT ID) do token atual
+                var jtiClaim = User.FindFirst("jti");
+                
+                if (jtiClaim == null || string.IsNullOrEmpty(jtiClaim.Value))
+                {
+                    _logger.LogWarning("Tentativa de logout com token sem JTI");
+                    return BadRequest("Token inválido");
+                }
+
+                // Adiciona o token à blacklist
+                await _tokenBlacklistService.AddToBlacklistAsync(jtiClaim.Value);
+
+                _logger.LogInformation("Logout realizado com sucesso para token JTI: {Jti}", jtiClaim.Value);
+
+                return Ok(new
+                {
+                    message = "Logout realizado com sucesso. Token invalidado.",
+                    timestamp = DateTime.UtcNow
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro durante logout");
+                return StatusCode(500, "Erro interno do servidor");
+            }
         }
     }
 }

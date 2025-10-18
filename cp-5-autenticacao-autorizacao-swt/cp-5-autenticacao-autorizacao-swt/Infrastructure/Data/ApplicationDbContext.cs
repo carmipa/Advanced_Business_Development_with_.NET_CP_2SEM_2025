@@ -31,6 +31,15 @@ namespace cp_5_autenticacao_autorizacao_swt.Infrastructure.Data
         public DbSet<User> Users { get; set; }
 
         /// <summary>
+        /// DbSet para a entidade Note
+        /// </summary>
+        /// <remarks>
+        /// Representa a tabela de notas no banco de dados.
+        /// Permite operações CRUD na tabela Notes.
+        /// </remarks>
+        public DbSet<Note> Notes { get; set; }
+
+        /// <summary>
         /// Configurações das entidades e relacionamentos
         /// </summary>
         /// <param name="modelBuilder">Builder para configuração do modelo</param>
@@ -72,6 +81,36 @@ namespace cp_5_autenticacao_autorizacao_swt.Infrastructure.Data
                 
                 // Índice para refresh token
                 entity.HasIndex(e => e.RefreshToken);
+            });
+
+            // Configuração da entidade Note
+            modelBuilder.Entity<Note>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasMaxLength(200);
+                
+                entity.Property(e => e.Content)
+                    .IsRequired();
+                
+                entity.Property(e => e.CreatedAt)
+                    .IsRequired();
+                
+                entity.Property(e => e.Tags)
+                    .HasMaxLength(500);
+                
+                // Relacionamento com User
+                entity.HasOne(e => e.User)
+                    .WithMany()
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                
+                // Índices para performance
+                entity.HasIndex(e => e.UserId);
+                entity.HasIndex(e => e.CreatedAt);
+                entity.HasIndex(e => e.IsSensitive);
             });
         }
     }
