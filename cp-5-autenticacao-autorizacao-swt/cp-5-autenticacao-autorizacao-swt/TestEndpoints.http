@@ -1,0 +1,124 @@
+### Arquivo de teste para todos os endpoints da API de Autenticação JWT
+### Use este arquivo para testar a API usando Visual Studio Code com a extensão REST Client
+
+@baseUrl = https://localhost:7000
+@token = 
+
+### 1. Teste de Registro de Usuário
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "nome": "João Silva",
+  "email": "joao@exemplo.com",
+  "senha": "MinhaSenh@123",
+  "confirmarSenha": "MinhaSenh@123"
+}
+
+### 2. Teste de Login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "joao@exemplo.com",
+  "senha": "MinhaSenh@123"
+}
+
+### 3. Teste de Validação de Token (copie o token da resposta do login)
+GET {{baseUrl}}/api/auth/validate
+Authorization: Bearer {{token}}
+
+### 4. Teste de Obter Perfil do Usuário
+GET {{baseUrl}}/api/users/profile
+Authorization: Bearer {{token}}
+
+### 5. Teste de Listar Todos os Usuários (apenas Admin)
+GET {{baseUrl}}/api/users
+Authorization: Bearer {{token}}
+
+### 6. Teste de Buscar Usuário por ID
+GET {{baseUrl}}/api/users/1
+Authorization: Bearer {{token}}
+
+### 7. Teste de Atualizar Usuário
+PUT {{baseUrl}}/api/users/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "id": 1,
+  "nome": "João Silva Atualizado",
+  "email": "joao.atualizado@exemplo.com",
+  "role": "User"
+}
+
+### 8. Teste de Renovação de Token (use o refresh token da resposta do login)
+POST {{baseUrl}}/api/auth/refresh-token
+Content-Type: application/json
+
+{
+  "refreshToken": "SEU_REFRESH_TOKEN_AQUI"
+}
+
+### 9. Teste de Bloquear Usuário (apenas Admin)
+PATCH {{baseUrl}}/api/users/1/toggle-block?bloquear=true
+Authorization: Bearer {{token}}
+
+### 10. Teste de Desbloquear Usuário (apenas Admin)
+PATCH {{baseUrl}}/api/users/1/toggle-block?bloquear=false
+Authorization: Bearer {{token}}
+
+### 11. Teste de Logout
+POST {{baseUrl}}/api/auth/logout
+Authorization: Bearer {{token}}
+
+### 12. Teste de Registro de Administrador
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "nome": "Admin Sistema",
+  "email": "admin@exemplo.com",
+  "senha": "AdminSenh@123",
+  "confirmarSenha": "AdminSenh@123"
+}
+
+### 13. Teste de Login do Administrador
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@exemplo.com",
+  "senha": "AdminSenh@123"
+}
+
+### 14. Teste de Remoção de Usuário (apenas Admin)
+DELETE {{baseUrl}}/api/users/1
+Authorization: Bearer {{token}}
+
+### 15. Teste de Validação com Token Inválido
+GET {{baseUrl}}/api/auth/validate
+Authorization: Bearer token_invalido
+
+### 16. Teste de Acesso Negado (sem token)
+GET {{baseUrl}}/api/users/profile
+
+### 17. Teste de Dados Inválidos no Login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "email_invalido",
+  "senha": "123"
+}
+
+### 18. Teste de Email Já Existente no Registro
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "nome": "Outro Usuário",
+  "email": "joao@exemplo.com",
+  "senha": "OutraSenh@123",
+  "confirmarSenha": "OutraSenh@123"
+}

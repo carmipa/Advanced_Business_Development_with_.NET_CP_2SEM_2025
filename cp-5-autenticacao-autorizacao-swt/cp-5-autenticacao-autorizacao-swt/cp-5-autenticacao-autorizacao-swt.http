@@ -1,0 +1,6 @@
+@cp_5_autenticacao_autorizacao_swt_HostAddress = http://localhost:5210
+
+GET {{cp_5_autenticacao_autorizacao_swt_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
