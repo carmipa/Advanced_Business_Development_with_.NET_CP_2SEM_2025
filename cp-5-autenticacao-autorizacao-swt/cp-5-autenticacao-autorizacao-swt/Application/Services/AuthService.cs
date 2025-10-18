@@ -15,25 +15,15 @@ using BCrypt.Net;
 namespace cp_5_autenticacao_autorizacao_swt.Application.Services
 {
     /// <summary>
-    /// Serviço responsável por operações de autenticação e autorização
+    /// Serviço responsável por operações de autenticação
+    /// Implementa login, registro, renovação de token e validação
     /// </summary>
-    /// <remarks>
-    /// Este serviço implementa todas as operações relacionadas à autenticação de usuários,
-    /// incluindo login, registro, renovação de tokens JWT, logout e validação de tokens.
-    /// Utiliza BCrypt para hash de senhas e JWT para autenticação stateless.
-    /// </remarks>
     public class AuthService : IAuthService
     {
         private readonly IUserRepository _userRepository;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
 
-        /// <summary>
-        /// Construtor do serviço de autenticação
-        /// </summary>
-        /// <param name="userRepository">Repositório para operações com usuários</param>
-        /// <param name="configuration">Configurações da aplicação</param>
-        /// <param name="mapper">Mapper para conversão entre DTOs e entidades</param>
         public AuthService(
             IUserRepository userRepository,
             IConfiguration configuration,
@@ -47,8 +37,6 @@ namespace cp_5_autenticacao_autorizacao_swt.Application.Services
         /// <summary>
         /// Realiza o login do usuário com email e senha
         /// </summary>
-        /// <param name="loginRequest">Dados de login contendo email e senha</param>
-        /// <returns>Resposta com tokens e dados do usuário, ou null se credenciais inválidas</returns>
         public async Task<LoginResponseDto?> LoginAsync(LoginRequestDto loginRequest)
         {
             // Busca o usuário pelo email
@@ -104,8 +92,6 @@ namespace cp_5_autenticacao_autorizacao_swt.Application.Services
         /// <summary>
         /// Registra um novo usuário no sistema
         /// </summary>
-        /// <param name="registerRequest">Dados do novo usuário incluindo nome, email e senha</param>
-        /// <returns>Resposta com tokens e dados do usuário criado, ou null se email já existe</returns>
         public async Task<LoginResponseDto?> RegisterAsync(RegisterRequestDto registerRequest)
         {
             // Verifica se o email já existe
@@ -146,8 +132,6 @@ namespace cp_5_autenticacao_autorizacao_swt.Application.Services
         /// <summary>
         /// Renova o token JWT usando o refresh token
         /// </summary>
-        /// <param name="refreshTokenRequest">Objeto contendo o refresh token válido</param>
-        /// <returns>Novos tokens e dados do usuário, ou null se refresh token inválido</returns>
         public async Task<LoginResponseDto?> RefreshTokenAsync(RefreshTokenRequestDto refreshTokenRequest)
         {
             var user = await _userRepository.GetByEmailAsync(GetEmailFromToken(refreshTokenRequest.RefreshToken));
@@ -177,8 +161,6 @@ namespace cp_5_autenticacao_autorizacao_swt.Application.Services
         /// <summary>
         /// Realiza logout do usuário invalidando o refresh token
         /// </summary>
-        /// <param name="userId">ID do usuário que está fazendo logout</param>
-        /// <returns>True se logout realizado com sucesso, false se usuário não encontrado</returns>
         public async Task<bool> LogoutAsync(int userId)
         {
             var user = await _userRepository.GetByIdAsync(userId);
@@ -193,10 +175,8 @@ namespace cp_5_autenticacao_autorizacao_swt.Application.Services
         }
 
         /// <summary>
-        /// Valida se um token JWT é válido e não expirado
+        /// Valida se um token JWT é válido
         /// </summary>
-        /// <param name="token">Token JWT a ser validado</param>
-        /// <returns>True se token é válido, false caso contrário</returns>
         public Task<bool> ValidateTokenAsync(string token)
         {
             try
@@ -226,8 +206,6 @@ namespace cp_5_autenticacao_autorizacao_swt.Application.Services
         /// <summary>
         /// Obtém o ID do usuário a partir de um token JWT válido
         /// </summary>
-        /// <param name="token">Token JWT válido</param>
-        /// <returns>ID do usuário ou null se token inválido</returns>
         public Task<int?> GetUserIdFromTokenAsync(string token)
         {
             try
@@ -248,10 +226,8 @@ namespace cp_5_autenticacao_autorizacao_swt.Application.Services
         }
 
         /// <summary>
-        /// Gera um token JWT para o usuário especificado
+        /// Gera um token JWT para o usuário
         /// </summary>
-        /// <param name="user">Usuário para o qual o token será gerado</param>
-        /// <returns>Token JWT assinado</returns>
         private string GenerateJwtToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -277,9 +253,8 @@ namespace cp_5_autenticacao_autorizacao_swt.Application.Services
         }
 
         /// <summary>
-        /// Gera um refresh token aleatório seguro
+        /// Gera um refresh token aleatório
         /// </summary>
-        /// <returns>Refresh token em formato Base64</returns>
         private string GenerateRefreshToken()
         {
             var randomNumber = new byte[32];
@@ -289,10 +264,8 @@ namespace cp_5_autenticacao_autorizacao_swt.Application.Services
         }
 
         /// <summary>
-        /// Extrai o email do usuário a partir de um token JWT
+        /// Extrai o email do token (método auxiliar)
         /// </summary>
-        /// <param name="token">Token JWT válido</param>
-        /// <returns>Email do usuário ou string vazia se não encontrado</returns>
         private string GetEmailFromToken(string token)
         {
             try
