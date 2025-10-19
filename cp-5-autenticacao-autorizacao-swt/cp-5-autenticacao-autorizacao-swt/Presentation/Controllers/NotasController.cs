@@ -266,15 +266,15 @@ public class NotasController : ControllerBase
     /// <param name="userId">ID do usuário autenticado</param>
     /// <param name="userRole">Role do usuário autenticado</param>
     /// <returns>True se tem permissão, false caso contrário</returns>
-    private async Task<bool> HasPermissionToAccessNote(NoteResponseDto note, int userId, string? userRole)
+    private Task<bool> HasPermissionToAccessNote(NoteResponseDto note, int userId, string? userRole)
     {
         // Admins têm acesso total
         if (userRole == UserRole.Admin.ToString())
         {
-            return true;
+            return Task.FromResult(true);
         }
 
         // Usuários só podem acessar suas próprias notas
-        return note.UserId == userId;
+        return Task.FromResult(note.UserId == userId);
     }
 }

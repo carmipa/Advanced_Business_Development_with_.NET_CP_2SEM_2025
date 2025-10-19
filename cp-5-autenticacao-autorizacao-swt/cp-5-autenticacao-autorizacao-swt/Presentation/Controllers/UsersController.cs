@@ -161,6 +161,25 @@ namespace cp_5_autenticacao_autorizacao_swt.Presentation.Controllers
         {
             try
             {
+                // Validação básica dos dados de entrada
+                if (userDto == null)
+                {
+                    _logger.LogWarning("Tentativa de atualização com dados nulos para usuário {UserId}", id);
+                    return BadRequest(new { message = "Dados do usuário são obrigatórios" });
+                }
+
+                if (string.IsNullOrWhiteSpace(userDto.Nome))
+                {
+                    _logger.LogWarning("Tentativa de atualização com nome vazio para usuário {UserId}", id);
+                    return BadRequest(new { message = "Nome é obrigatório" });
+                }
+
+                if (string.IsNullOrWhiteSpace(userDto.Email) || !IsValidEmail(userDto.Email))
+                {
+                    _logger.LogWarning("Tentativa de atualização com email inválido para usuário {UserId}", id);
+                    return BadRequest(new { message = "Email válido é obrigatório" });
+                }
+
                 var currentUserId = GetCurrentUserId();
                 var currentUserRole = GetCurrentUserRole();
 
@@ -176,6 +195,16 @@ namespace cp_5_autenticacao_autorizacao_swt.Presentation.Controllers
                 if (currentUserRole != "Admin" && !string.IsNullOrEmpty(userDto.Role))
                 {
                     userDto.Role = string.Empty; // Remove o role da atualização
+                }
+
+                // Validação de role se for Admin
+                if (currentUserRole == "Admin" && !string.IsNullOrEmpty(userDto.Role))
+                {
+                    if (!IsValidRole(userDto.Role))
+                    {
+                        _logger.LogWarning("Tentativa de atualização com role inválido: {Role}", userDto.Role);
+                        return BadRequest(new { message = "Role inválido. Use: Leitor, Editor ou Admin" });
+                    }
                 }
 
                 var result = await _userService.UpdateAsync(id, userDto);
@@ -358,6 +387,34 @@ namespace cp_5_autenticacao_autorizacao_swt.Presentation.Controllers
         private string GetCurrentUserRole()
         {
             return User.FindFirst(ClaimTypes.Role)?.Value ?? "User";
+        }
+
+        /// <summary>
+        /// Valida se o email tem formato válido
+        /// </summary>
+        /// <param name="email">Email a ser validado</param>
+        /// <returns>True se válido, false caso contrário</returns>
+        private bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Valida se o role é válido
+        /// </summary>
+        /// <param name="role">Role a ser validado</param>
+        /// <returns>True se válido, false caso contrário</returns>
+        private bool IsValidRole(string role)
+        {
+            return role == "Leitor" || role == "Editor" || role == "Admin";
         }
     }
 }

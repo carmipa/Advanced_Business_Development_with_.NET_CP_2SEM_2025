@@ -226,7 +226,7 @@ cp-5-autenticacao-autorizacao-swt/
 | `/` | `GET` | Listar todos os usuários | ✅ | Admin | ✅ |
 | `/{id}` | `GET` | Buscar usuário por ID | ✅ | Próprio/Admin | ✅ |
 | `/profile` | `GET` | Perfil do usuário atual | ✅ | Próprio | ✅ |
-| `/{id}` | `PUT` | Atualizar usuário | ✅ | Próprio/Admin | ⚠️ |
+| `/{id}` | `PUT` | Atualizar usuário | ✅ | Próprio/Admin | ✅ |
 | `/{id}` | `DELETE` | Remover usuário | ✅ | Admin | ✅ |
 | `/{id}/toggle-block` | `PATCH` | Bloquear/desbloquear | ✅ | Admin | ✅ |
 
