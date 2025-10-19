@@ -1,5 +1,16 @@
 # 🔐 SafeScribe API - Autenticação e Autorização com JWT
 
+---
+
+**Integrantes do Grupo:**  
+
+- **Amanda Mesquita Cirino Da Silva** - RM559177  
+- **Journey Tiago Lopes Ferreira** - RM556071  
+- **Paulo André Carminati** - RM557881  
+**Turma:** 2-TDSPZ  
+
+---
+
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core-8.0-512BD4?style=for-the-badge&logo=aspnetcore&logoColor=white)](https://docs.microsoft.com/aspnet/core/)
 [![Entity Framework](https://img.shields.io/badge/Entity%20Framework-8.0-512BD4?style=for-the-badge&logo=entityframework&logoColor=white)](https://docs.microsoft.com/ef/)
@@ -22,6 +33,7 @@
 - [🔧 Instalação](#-instalação)
 - [📖 Documentação da API](#-documentação-da-api)
 - [🧪 Testes](#-testes)
+- [🔧 Correções e Melhorias](#-correções-e-melhorias-implementadas)
 - [🔐 Segurança](#-segurança)
 - [📊 Banco de Dados](#-banco-de-dados)
 - [📝 Logs](#-logs)
@@ -41,6 +53,8 @@ A **SafeScribe API** é uma solução robusta e escalável para gestão de docum
 - 📝 **Gestão de Notas** com controle de acesso por usuário
 - 🛡️ **Validação robusta** de dados com FluentValidation
 - 📚 **Documentação Swagger** completa e interativa
+- ✅ **Código limpo** sem warnings ou erros de compilação
+- 🔒 **Segurança aprimorada** com pacotes atualizados
 - 🏗️ **Clean Architecture** bem estruturada e testável
 - 📊 **Logging detalhado** com Serilog para auditoria
 - 🗄️ **Entity Framework Core** para persistência de dados
@@ -226,7 +240,7 @@ cp-5-autenticacao-autorizacao-swt/
 | `/` | `GET` | Listar todos os usuários | ✅ | Admin | ✅ |
 | `/{id}` | `GET` | Buscar usuário por ID | ✅ | Próprio/Admin | ✅ |
 | `/profile` | `GET` | Perfil do usuário atual | ✅ | Próprio | ✅ |
-| `/{id}` | `PUT` | Atualizar usuário | ✅ | Próprio/Admin | ⚠️ |
+| `/{id}` | `PUT` | Atualizar usuário | ✅ | Próprio/Admin | ✅ |
 | `/{id}` | `DELETE` | Remover usuário | ✅ | Admin | ✅ |
 | `/{id}/toggle-block` | `PATCH` | Bloquear/desbloquear | ✅ | Admin | ✅ |
 
@@ -305,22 +319,26 @@ O projeto usa **SQL Server LocalDB** por padrão. Para usar outro banco:
 ### 🚀 Passos para Instalação
 
 1. **Clone o repositório**
+
    ```bash
    git clone https://github.com/carmipa/Advanced_Business_Development_with_.NET_CP_2SEM_2025.git
    cd Advanced_Business_Development_with_.NET_CP_2SEM_2025/cp-5-autenticacao-autorizacao-swt
    ```
 
 2. **Restaure as dependências**
+
    ```bash
    dotnet restore
    ```
 
 3. **Configure o banco de dados**
+
    ```bash
    dotnet ef database update
    ```
 
 4. **Execute o projeto**
+
    ```bash
    dotnet run
    ```
@@ -492,6 +510,55 @@ Consulte o arquivo `manual_de-testes.md` para:
 - Scripts de automação
 - Troubleshooting
 
+## 🔧 Correções e Melhorias Implementadas
+
+### ✅ Problemas Resolvidos
+
+#### 1. **Warning CS1998 - Método Async Desnecessário**
+
+- **Problema**: Método `HasPermissionToAccessNote` era async mas não usava await
+- **Solução**: Convertido para retornar `Task<bool>` usando `Task.FromResult()`
+- **Status**: ✅ **Corrigido**
+
+#### 2. **Vulnerabilidade JWT - Pacote Desatualizado**
+
+- **Problema**: Pacote `System.IdentityModel.Tokens.Jwt` 7.0.3 tinha vulnerabilidade conhecida
+- **Solução**: Atualizado para versão 8.0.2 (mais segura)
+- **Status**: ✅ **Corrigido**
+
+#### 3. **Validação PUT /users/{id} - Validações Insuficientes**
+
+- **Problema**: Falta de validação adequada no endpoint de atualização
+- **Solução**: Adicionadas validações robustas:
+  - Validação de dados nulos
+  - Validação de nome obrigatório
+  - Validação de email válido
+  - Validação de role válido (para admins)
+  - Métodos auxiliares `IsValidEmail()` e `IsValidRole()`
+- **Status**: ✅ **Corrigido**
+
+#### 4. **Status da Documentação - Informações Incorretas**
+
+- **Problema**: Endpoint PUT /users/{id} marcado com ⚠️ incorretamente
+- **Solução**: Atualizado status para ✅ no README.md
+- **Status**: ✅ **Corrigido**
+
+### 🚀 Melhorias Implementadas
+
+1. **Validação Robusta**: Endpoint PUT /users/{id} agora tem validação completa
+2. **Segurança Aprimorada**: Pacote JWT atualizado para versão mais segura
+3. **Código Limpo**: Removido warning de compilação
+4. **Documentação Atualizada**: Status corretos refletidos na documentação
+
+### 📈 Resultado Final
+
+- ✅ **0 Avisos** de compilação
+- ✅ **0 Erros** de compilação
+- ✅ **Compilação bem-sucedida**
+- ✅ **Todos os endpoints funcionais**
+- ✅ **Validações robustas implementadas**
+- ✅ **Segurança aprimorada**
+
 ## 🔐 Segurança
 
 ### 🛡️ Medidas de Segurança Implementadas
@@ -623,7 +690,7 @@ Log.Logger = new LoggerConfiguration()
 
 ### 📁 Estrutura de Logs
 
-```
+```text
 logs/
 ├── log-20240101.txt
 ├── log-20240102.txt
