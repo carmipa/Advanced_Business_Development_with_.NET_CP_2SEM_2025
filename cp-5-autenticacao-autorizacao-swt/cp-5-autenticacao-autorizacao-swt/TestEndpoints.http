@@ -1,7 +1,7 @@
 ### Arquivo de teste para todos os endpoints da API de Autenticação JWT
 ### Use este arquivo para testar a API usando Visual Studio Code com a extensão REST Client
 
-@baseUrl = https://localhost:7000
+@baseUrl = http://localhost:5210
 @token = 
 
 ### 1. Teste de Registro de Usuário
@@ -9,8 +9,8 @@ POST {{baseUrl}}/api/auth/register
 Content-Type: application/json
 
 {
-  "nome": "João Silva",
-  "email": "joao@exemplo.com",
+  "nome": "Maria Santos",
+  "email": "maria@exemplo.com",
   "senha": "MinhaSenh@123",
   "confirmarSenha": "MinhaSenh@123"
 }
@@ -20,7 +20,7 @@ POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "joao@exemplo.com",
+  "email": "maria@exemplo.com",
   "senha": "MinhaSenh@123"
 }
 
@@ -118,7 +118,43 @@ Content-Type: application/json
 
 {
   "nome": "Outro Usuário",
-  "email": "joao@exemplo.com",
+  "email": "maria@exemplo.com",
   "senha": "OutraSenh@123",
   "confirmarSenha": "OutraSenh@123"
 }
+
+### 19. Teste de Criação de Nota (Editor/Admin)
+POST {{baseUrl}}/api/v1/notas
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Nota de Teste",
+  "content": "Esta é uma nota de teste criada via API com conteúdo suficiente para passar na validação",
+  "isSensitive": false,
+  "tags": "teste,api,swagger"
+}
+
+### 20. Teste de Listar Notas do Usuário
+GET {{baseUrl}}/api/v1/notas
+Authorization: Bearer {{token}}
+
+### 21. Teste de Buscar Nota por ID
+GET {{baseUrl}}/api/v1/notas/1
+Authorization: Bearer {{token}}
+
+### 22. Teste de Atualizar Nota
+PUT {{baseUrl}}/api/v1/notas/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Nota Atualizada",
+  "content": "Esta é uma nota atualizada via API com conteúdo suficiente para passar na validação",
+  "isSensitive": true,
+  "tags": "atualizada,teste,api"
+}
+
+### 23. Teste de Excluir Nota (Admin)
+DELETE {{baseUrl}}/api/v1/notas/1
+Authorization: Bearer {{token}}

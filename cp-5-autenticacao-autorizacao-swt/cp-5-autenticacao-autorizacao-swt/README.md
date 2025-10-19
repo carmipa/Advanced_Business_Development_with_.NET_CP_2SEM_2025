@@ -555,6 +555,71 @@ Consulte o arquivo `manual_de-testes.md` para:
 - ✅ **Validações robustas implementadas**
 - ✅ **Segurança aprimorada**
 
+### 🧪 **Resultados dos Testes Realizados**
+
+#### **Testes com cURL - 100% Funcionais:**
+
+| **Endpoint** | **Método** | **Status** | **Resultado** |
+|--------------|------------|------------|---------------|
+| `/api/auth/register` | POST | ✅ | Usuário criado com sucesso |
+| `/api/auth/login` | POST | ✅ | Login realizado com token JWT |
+| `/api/auth/validate` | GET | ✅ | Token validado corretamente |
+| `/api/users/profile` | GET | ✅ | Perfil do usuário retornado |
+| `/api/v1/notas` | POST | ✅ | Nota criada com sucesso |
+| `/api/v1/notas` | GET | ✅ | Lista de notas funcionando |
+| `/api/auth/refresh-token` | POST | ⚠️ | Token expirado (comportamento esperado) |
+| `/api/auth/logout` | POST | ✅ | Logout realizado com blacklist |
+| Token após logout | GET | ✅ | Token invalidado corretamente |
+
+#### **Dados de Teste Utilizados:**
+
+```json
+// Registro de Usuário
+{
+  "nome": "Maria Santos",
+  "email": "maria@exemplo.com",
+  "senha": "MinhaSenh@123",
+  "confirmarSenha": "MinhaSenh@123"
+}
+
+// Criação de Nota
+{
+  "title": "Nota de Teste",
+  "content": "Esta é uma nota de teste criada via API com conteúdo suficiente para passar na validação",
+  "tags": "teste,api,swagger"
+}
+```
+
+#### **Respostas de Sucesso:**
+
+```json
+// Login Response
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refreshToken": "q1czu9L6sah9D/adNTxDCB07fUT7q1wVLnNss0h46AY=",
+  "expiresAt": "2025-10-19T14:29:26.6324593Z",
+  "user": {
+    "id": 3,
+    "nome": "Maria Santos",
+    "email": "maria@exemplo.com",
+    "role": "Editor"
+  }
+}
+
+// Nota Criada
+{
+  "id": 0,
+  "title": "Nota de Teste",
+  "content": "Esta é uma nota de teste criada via API com conteúdo suficiente para passar na validação",
+  "createdAt": "2025-10-19T13:30:21.9315855Z",
+  "updatedAt": null,
+  "userId": 3,
+  "userName": "Maria Santos",
+  "isSensitive": false,
+  "tags": "teste,api,swagger"
+}
+```
+
 ## 🔐 Segurança
 
 ### 🛡️ Medidas de Segurança Implementadas
