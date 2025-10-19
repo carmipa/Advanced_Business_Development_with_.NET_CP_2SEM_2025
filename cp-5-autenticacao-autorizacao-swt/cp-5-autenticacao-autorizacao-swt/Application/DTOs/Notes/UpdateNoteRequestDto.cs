@@ -38,3 +38,4 @@ public class UpdateNoteRequestDto
     [StringLength(500, ErrorMessage = "As tags não podem exceder 500 caracteres")]
     public string? Tags { get; set; }
 }
+

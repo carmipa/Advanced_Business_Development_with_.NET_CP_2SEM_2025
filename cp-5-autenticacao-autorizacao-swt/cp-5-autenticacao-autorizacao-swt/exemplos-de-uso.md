@@ -11,6 +11,14 @@
 - [🌐 Exemplos com JavaScript/Fetch](#-exemplos-com-javascriptfetch)
 - [🐍 Exemplos com Python](#-exemplos-com-python)
 - [📊 Exemplos com Postman](#-exemplos-com-postman)
+- [📝 Exemplos de Gestão de Notas](#-exemplos-de-gestão-de-notas)
+- [🔄 Exemplos de Refresh Tokens](#-exemplos-de-refresh-tokens)
+- [🚫 Exemplos de Sistema de Blacklist](#-exemplos-de-sistema-de-blacklist)
+- [👥 Exemplos de Sistema de Roles](#-exemplos-de-sistema-de-roles)
+- [✅ Exemplos de Validação de Dados](#-exemplos-de-validação-de-dados)
+- [📊 Exemplos de Logging](#-exemplos-de-logging)
+- [🔧 Exemplos de Middleware](#-exemplos-de-middleware)
+- [⚠️ Exemplos de Tratamento de Exceções](#️-exemplos-de-tratamento-de-exceções)
 - [🔄 Automação de Testes](#-automação-de-testes)
 
 ---
@@ -598,6 +606,1145 @@ if __name__ == "__main__":
 
 ---
 
+## 📝 Exemplos de Gestão de Notas
+
+### 1. 📄 Criar Nova Nota (Editor/Admin)
+
+#### cURL
+```bash
+curl -X POST "http://localhost:5210/api/v1/notas" \
+  -H "Authorization: Bearer {seu_token_jwt}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Reunião de Planejamento Q4",
+    "content": "Discussão sobre estratégias para o próximo trimestre...",
+    "isSensitive": true,
+    "tags": "planejamento,estratégia,confidencial"
+  }'
+```
+
+#### JavaScript/Fetch
+```javascript
+const createNote = async (token) => {
+  try {
+    const response = await fetch('http://localhost:5210/api/v1/notas', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        title: "Reunião de Planejamento Q4",
+        content: "Discussão sobre estratégias para o próximo trimestre...",
+        isSensitive: true,
+        tags: "planejamento,estratégia,confidencial"
+      })
+    });
+    
+    if (response.ok) {
+      const note = await response.json();
+      console.log('Nota criada:', note);
+      return note;
+    } else {
+      throw new Error(`Erro: ${response.status}`);
+    }
+  } catch (error) {
+    console.error('Erro ao criar nota:', error);
+  }
+};
+```
+
+#### Python
+```python
+import requests
+
+def create_note(token):
+    url = "http://localhost:5210/api/v1/notas"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "title": "Reunião de Planejamento Q4",
+        "content": "Discussão sobre estratégias para o próximo trimestre...",
+        "isSensitive": True,
+        "tags": "planejamento,estratégia,confidencial"
+    }
+    
+    response = requests.post(url, headers=headers, json=data)
+    if response.status_code == 201:
+        print("Nota criada com sucesso!")
+        return response.json()
+    else:
+        print(f"Erro: {response.status_code}")
+        return None
+```
+
+### 2. 📋 Listar Notas do Usuário
+
+#### cURL
+```bash
+curl -X GET "http://localhost:5210/api/v1/notas" \
+  -H "Authorization: Bearer {seu_token_jwt}"
+```
+
+#### JavaScript/Fetch
+```javascript
+const listNotes = async (token) => {
+  try {
+    const response = await fetch('http://localhost:5210/api/v1/notas', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (response.ok) {
+      const notes = await response.json();
+      console.log('Notas:', notes);
+      return notes;
+    } else {
+      throw new Error(`Erro: ${response.status}`);
+    }
+  } catch (error) {
+    console.error('Erro ao listar notas:', error);
+  }
+};
+```
+
+#### Python
+```python
+def list_notes(token):
+    url = "http://localhost:5210/api/v1/notas"
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        notes = response.json()
+        print(f"Encontradas {len(notes)} notas")
+        return notes
+    else:
+        print(f"Erro: {response.status_code}")
+        return None
+```
+
+### 3. 🔍 Buscar Nota por ID
+
+#### cURL
+```bash
+curl -X GET "http://localhost:5210/api/v1/notas/1" \
+  -H "Authorization: Bearer {seu_token_jwt}"
+```
+
+#### JavaScript/Fetch
+```javascript
+const getNoteById = async (token, noteId) => {
+  try {
+    const response = await fetch(`http://localhost:5210/api/v1/notas/${noteId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (response.ok) {
+      const note = await response.json();
+      console.log('Nota encontrada:', note);
+      return note;
+    } else {
+      throw new Error(`Erro: ${response.status}`);
+    }
+  } catch (error) {
+    console.error('Erro ao buscar nota:', error);
+  }
+};
+```
+
+#### Python
+```python
+def get_note_by_id(token, note_id):
+    url = f"http://localhost:5210/api/v1/notas/{note_id}"
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        note = response.json()
+        print(f"Nota encontrada: {note['title']}")
+        return note
+    else:
+        print(f"Erro: {response.status_code}")
+        return None
+```
+
+### 4. ✏️ Atualizar Nota (Editor/Admin)
+
+#### cURL
+```bash
+curl -X PUT "http://localhost:5210/api/v1/notas/1" \
+  -H "Authorization: Bearer {seu_token_jwt}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Reunião de Planejamento Q4 - Atualizada",
+    "content": "Discussão sobre estratégias para o próximo trimestre... Atualizada com novas informações.",
+    "isSensitive": true,
+    "tags": "planejamento,estratégia,confidencial,atualizada"
+  }'
+```
+
+#### JavaScript/Fetch
+```javascript
+const updateNote = async (token, noteId, noteData) => {
+  try {
+    const response = await fetch(`http://localhost:5210/api/v1/notas/${noteId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(noteData)
+    });
+    
+    if (response.ok) {
+      const updatedNote = await response.json();
+      console.log('Nota atualizada:', updatedNote);
+      return updatedNote;
+    } else {
+      throw new Error(`Erro: ${response.status}`);
+    }
+  } catch (error) {
+    console.error('Erro ao atualizar nota:', error);
+  }
+};
+```
+
+#### Python
+```python
+def update_note(token, note_id, note_data):
+    url = f"http://localhost:5210/api/v1/notas/{note_id}"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+    
+    response = requests.put(url, headers=headers, json=note_data)
+    if response.status_code == 200:
+        updated_note = response.json()
+        print("Nota atualizada com sucesso!")
+        return updated_note
+    else:
+        print(f"Erro: {response.status_code}")
+        return None
+```
+
+### 5. 🗑️ Deletar Nota (Editor/Admin)
+
+#### cURL
+```bash
+curl -X DELETE "http://localhost:5210/api/v1/notas/1" \
+  -H "Authorization: Bearer {seu_token_jwt}"
+```
+
+#### JavaScript/Fetch
+```javascript
+const deleteNote = async (token, noteId) => {
+  try {
+    const response = await fetch(`http://localhost:5210/api/v1/notas/${noteId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (response.ok) {
+      console.log('Nota deletada com sucesso!');
+      return true;
+    } else {
+      throw new Error(`Erro: ${response.status}`);
+    }
+  } catch (error) {
+    console.error('Erro ao deletar nota:', error);
+    return false;
+  }
+};
+```
+
+#### Python
+```python
+def delete_note(token, note_id):
+    url = f"http://localhost:5210/api/v1/notas/{note_id}"
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    response = requests.delete(url, headers=headers)
+    if response.status_code == 204:
+        print("Nota deletada com sucesso!")
+        return True
+    else:
+        print(f"Erro: {response.status_code}")
+        return False
+```
+
+---
+
+## 🔄 Exemplos de Refresh Tokens
+
+### 1. 🔄 Renovar Token de Acesso
+
+#### cURL
+```bash
+curl -X POST "http://localhost:5210/api/auth/refresh-token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "refreshToken": "seu_refresh_token_aqui"
+  }'
+```
+
+#### JavaScript/Fetch
+```javascript
+const refreshToken = async (refreshToken) => {
+  try {
+    const response = await fetch('http://localhost:5210/api/auth/refresh-token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        refreshToken: refreshToken
+      })
+    });
+    
+    if (response.ok) {
+      const newTokens = await response.json();
+      console.log('Tokens renovados:', newTokens);
+      return newTokens;
+    } else {
+      throw new Error(`Erro: ${response.status}`);
+    }
+  } catch (error) {
+    console.error('Erro ao renovar token:', error);
+  }
+};
+```
+
+#### Python
+```python
+def refresh_token(refresh_token):
+    url = "http://localhost:5210/api/auth/refresh-token"
+    headers = {"Content-Type": "application/json"}
+    data = {"refreshToken": refresh_token}
+    
+    response = requests.post(url, headers=headers, json=data)
+    if response.status_code == 200:
+        new_tokens = response.json()
+        print("Tokens renovados com sucesso!")
+        return new_tokens
+    else:
+        print(f"Erro: {response.status_code}")
+        return None
+```
+
+### 2. 🔄 Implementação Automática de Renovação
+
+#### JavaScript/Fetch
+```javascript
+class TokenManager {
+  constructor() {
+    this.accessToken = localStorage.getItem('accessToken');
+    this.refreshToken = localStorage.getItem('refreshToken');
+  }
+  
+  async makeAuthenticatedRequest(url, options = {}) {
+    // Primeira tentativa com token atual
+    let response = await fetch(url, {
+      ...options,
+      headers: {
+        ...options.headers,
+        'Authorization': `Bearer ${this.accessToken}`
+      }
+    });
+    
+    // Se token expirou, tenta renovar
+    if (response.status === 401) {
+      const newTokens = await this.refreshToken();
+      if (newTokens) {
+        // Segunda tentativa com novo token
+        response = await fetch(url, {
+          ...options,
+          headers: {
+            ...options.headers,
+            'Authorization': `Bearer ${this.accessToken}`
+          }
+        });
+      }
+    }
+    
+    return response;
+  }
+  
+  async refreshToken() {
+    try {
+      const response = await fetch('http://localhost:5210/api/auth/refresh-token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          refreshToken: this.refreshToken
+        })
+      });
+      
+      if (response.ok) {
+        const newTokens = await response.json();
+        this.accessToken = newTokens.token;
+        this.refreshToken = newTokens.refreshToken;
+        
+        // Salvar no localStorage
+        localStorage.setItem('accessToken', this.accessToken);
+        localStorage.setItem('refreshToken', this.refreshToken);
+        
+        return newTokens;
+      }
+    } catch (error) {
+      console.error('Erro ao renovar token:', error);
+    }
+    
+    return null;
+  }
+}
+```
+
+---
+
+## 🚫 Exemplos de Sistema de Blacklist
+
+### 1. 🚪 Logout com Blacklist
+
+#### cURL
+```bash
+curl -X POST "http://localhost:5210/api/auth/logout" \
+  -H "Authorization: Bearer {seu_token_jwt}"
+```
+
+#### JavaScript/Fetch
+```javascript
+const logout = async (token) => {
+  try {
+    const response = await fetch('http://localhost:5210/api/auth/logout', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (response.ok) {
+      console.log('Logout realizado com sucesso!');
+      // Limpar tokens do localStorage
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      return true;
+    } else {
+      throw new Error(`Erro: ${response.status}`);
+    }
+  } catch (error) {
+    console.error('Erro ao fazer logout:', error);
+    return false;
+  }
+};
+```
+
+#### Python
+```python
+def logout(token):
+    url = "http://localhost:5210/api/auth/logout"
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    response = requests.post(url, headers=headers)
+    if response.status_code == 200:
+        print("Logout realizado com sucesso!")
+        return True
+    else:
+        print(f"Erro: {response.status_code}")
+        return False
+```
+
+### 2. ❌ Tentar Usar Token Blacklistado
+
+#### cURL
+```bash
+# Primeiro faça logout
+curl -X POST "http://localhost:5210/api/auth/logout" \
+  -H "Authorization: Bearer {seu_token_jwt}"
+
+# Depois tente usar o mesmo token
+curl -X GET "http://localhost:5210/api/users/profile" \
+  -H "Authorization: Bearer {seu_token_jwt}"
+```
+
+#### JavaScript/Fetch
+```javascript
+const testBlacklistedToken = async (token) => {
+  try {
+    // Primeiro fazer logout
+    await logout(token);
+    
+    // Depois tentar usar o token blacklistado
+    const response = await fetch('http://localhost:5210/api/users/profile', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (response.status === 401) {
+      console.log('✅ Token foi corretamente blacklistado!');
+      return true;
+    } else {
+      console.log('❌ Token não foi blacklistado corretamente');
+      return false;
+    }
+  } catch (error) {
+    console.error('Erro ao testar blacklist:', error);
+    return false;
+  }
+};
+```
+
+---
+
+## 👥 Exemplos de Sistema de Roles
+
+### 1. 👤 Teste com Role "Leitor"
+
+#### cURL
+```bash
+# Criar usuário com role Leitor
+curl -X POST "http://localhost:5210/api/auth/register" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nome": "Leitor Silva",
+    "email": "leitor@exemplo.com",
+    "senha": "MinhaSenh@123",
+    "confirmarSenha": "MinhaSenh@123"
+  }'
+
+# Tentar criar nota (deve falhar)
+curl -X POST "http://localhost:5210/api/v1/notas" \
+  -H "Authorization: Bearer {token_de_leitor}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Teste de Nota",
+    "content": "Conteúdo da nota",
+    "isSensitive": false
+  }'
+```
+
+#### JavaScript/Fetch
+```javascript
+const testLeitorRole = async () => {
+  try {
+    // Registrar usuário leitor
+    const registerResponse = await fetch('http://localhost:5210/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        nome: "Leitor Silva",
+        email: "leitor@exemplo.com",
+        senha: "MinhaSenh@123",
+        confirmarSenha: "MinhaSenh@123"
+      })
+    });
+    
+    if (registerResponse.ok) {
+      const { token } = await registerResponse.json();
+      
+      // Tentar criar nota (deve falhar)
+      const noteResponse = await fetch('http://localhost:5210/api/v1/notas', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: "Teste de Nota",
+          content: "Conteúdo da nota",
+          isSensitive: false
+        })
+      });
+      
+      if (noteResponse.status === 403) {
+        console.log('✅ Role Leitor funcionando corretamente - acesso negado para criar nota');
+      } else {
+        console.log('❌ Role Leitor não funcionando corretamente');
+      }
+    }
+  } catch (error) {
+    console.error('Erro ao testar role Leitor:', error);
+  }
+};
+```
+
+### 2. ✏️ Teste com Role "Editor"
+
+#### cURL
+```bash
+# Criar usuário com role Editor
+curl -X POST "http://localhost:5210/api/auth/register" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nome": "Editor Silva",
+    "email": "editor@exemplo.com",
+    "senha": "MinhaSenh@123",
+    "confirmarSenha": "MinhaSenh@123"
+  }'
+
+# Criar nota (deve funcionar)
+curl -X POST "http://localhost:5210/api/v1/notas" \
+  -H "Authorization: Bearer {token_de_editor}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Nota do Editor",
+    "content": "Conteúdo da nota criada pelo editor",
+    "isSensitive": false
+  }'
+```
+
+#### JavaScript/Fetch
+```javascript
+const testEditorRole = async () => {
+  try {
+    // Registrar usuário editor
+    const registerResponse = await fetch('http://localhost:5210/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        nome: "Editor Silva",
+        email: "editor@exemplo.com",
+        senha: "MinhaSenh@123",
+        confirmarSenha: "MinhaSenh@123"
+      })
+    });
+    
+    if (registerResponse.ok) {
+      const { token } = await registerResponse.json();
+      
+      // Criar nota (deve funcionar)
+      const noteResponse = await fetch('http://localhost:5210/api/v1/notas', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: "Nota do Editor",
+          content: "Conteúdo da nota criada pelo editor",
+          isSensitive: false
+        })
+      });
+      
+      if (noteResponse.ok) {
+        console.log('✅ Role Editor funcionando corretamente - nota criada com sucesso');
+      } else {
+        console.log('❌ Role Editor não funcionando corretamente');
+      }
+    }
+  } catch (error) {
+    console.error('Erro ao testar role Editor:', error);
+  }
+};
+```
+
+### 3. 👑 Teste com Role "Admin"
+
+#### cURL
+```bash
+# Criar usuário com role Admin
+curl -X POST "http://localhost:5210/api/auth/register" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nome": "Admin Silva",
+    "email": "admin@exemplo.com",
+    "senha": "MinhaSenh@123",
+    "confirmarSenha": "MinhaSenh@123"
+  }'
+
+# Acessar nota de outro usuário (deve funcionar)
+curl -X GET "http://localhost:5210/api/v1/notas/1" \
+  -H "Authorization: Bearer {token_de_admin}"
+```
+
+#### JavaScript/Fetch
+```javascript
+const testAdminRole = async () => {
+  try {
+    // Registrar usuário admin
+    const registerResponse = await fetch('http://localhost:5210/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        nome: "Admin Silva",
+        email: "admin@exemplo.com",
+        senha: "MinhaSenh@123",
+        confirmarSenha: "MinhaSenh@123"
+      })
+    });
+    
+    if (registerResponse.ok) {
+      const { token } = await registerResponse.json();
+      
+      // Acessar nota de outro usuário (deve funcionar)
+      const noteResponse = await fetch('http://localhost:5210/api/v1/notas/1', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (noteResponse.ok) {
+        console.log('✅ Role Admin funcionando corretamente - acesso total permitido');
+      } else {
+        console.log('❌ Role Admin não funcionando corretamente');
+      }
+    }
+  } catch (error) {
+    console.error('Erro ao testar role Admin:', error);
+  }
+};
+```
+
+---
+
+## ✅ Exemplos de Validação de Dados
+
+### 1. ❌ Email Inválido no Registro
+
+#### cURL
+```bash
+curl -X POST "http://localhost:5210/api/auth/register" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nome": "João Silva",
+    "email": "email_invalido",
+    "senha": "MinhaSenh@123",
+    "confirmarSenha": "MinhaSenh@123"
+  }'
+```
+
+#### JavaScript/Fetch
+```javascript
+const testInvalidEmail = async () => {
+  try {
+    const response = await fetch('http://localhost:5210/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        nome: "João Silva",
+        email: "email_invalido",
+        senha: "MinhaSenh@123",
+        confirmarSenha: "MinhaSenh@123"
+      })
+    });
+    
+    if (response.status === 400) {
+      const error = await response.json();
+      console.log('✅ Validação de email funcionando:', error);
+    } else {
+      console.log('❌ Validação de email não funcionando');
+    }
+  } catch (error) {
+    console.error('Erro ao testar validação de email:', error);
+  }
+};
+```
+
+### 2. ❌ Senha Fraca
+
+#### cURL
+```bash
+curl -X POST "http://localhost:5210/api/auth/register" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nome": "João Silva",
+    "email": "joao@exemplo.com",
+    "senha": "123",
+    "confirmarSenha": "123"
+  }'
+```
+
+#### JavaScript/Fetch
+```javascript
+const testWeakPassword = async () => {
+  try {
+    const response = await fetch('http://localhost:5210/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        nome: "João Silva",
+        email: "joao@exemplo.com",
+        senha: "123",
+        confirmarSenha: "123"
+      })
+    });
+    
+    if (response.status === 400) {
+      const error = await response.json();
+      console.log('✅ Validação de senha funcionando:', error);
+    } else {
+      console.log('❌ Validação de senha não funcionando');
+    }
+  } catch (error) {
+    console.error('Erro ao testar validação de senha:', error);
+  }
+};
+```
+
+### 3. ❌ Título de Nota Vazio
+
+#### cURL
+```bash
+curl -X POST "http://localhost:5210/api/v1/notas" \
+  -H "Authorization: Bearer {seu_token_jwt}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "",
+    "content": "Conteúdo da nota",
+    "isSensitive": false
+  }'
+```
+
+#### JavaScript/Fetch
+```javascript
+const testEmptyNoteTitle = async (token) => {
+  try {
+    const response = await fetch('http://localhost:5210/api/v1/notas', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        title: "",
+        content: "Conteúdo da nota",
+        isSensitive: false
+      })
+    });
+    
+    if (response.status === 400) {
+      const error = await response.json();
+      console.log('✅ Validação de título funcionando:', error);
+    } else {
+      console.log('❌ Validação de título não funcionando');
+    }
+  } catch (error) {
+    console.error('Erro ao testar validação de título:', error);
+  }
+};
+```
+
+---
+
+## 📊 Exemplos de Logging
+
+### 1. 📝 Verificar Logs de Login
+
+#### JavaScript/Fetch
+```javascript
+const checkLoginLogs = async () => {
+  try {
+    // Fazer login
+    const response = await fetch('http://localhost:5210/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: "joao@exemplo.com",
+        senha: "MinhaSenh@123"
+      })
+    });
+    
+    if (response.ok) {
+      console.log('✅ Login realizado - verifique os logs em logs/log-{data}.txt');
+      console.log('Procure por: "Login realizado com sucesso para email"');
+    }
+  } catch (error) {
+    console.error('Erro ao fazer login:', error);
+  }
+};
+```
+
+#### Python
+```python
+import requests
+import json
+from datetime import datetime
+
+def check_login_logs():
+    # Fazer login
+    url = "http://localhost:5210/api/auth/login"
+    data = {
+        "email": "joao@exemplo.com",
+        "senha": "MinhaSenh@123"
+    }
+    
+    response = requests.post(url, json=data)
+    if response.status_code == 200:
+        print("✅ Login realizado - verifique os logs em logs/log-{data}.txt")
+        print("Procure por: 'Login realizado com sucesso para email'")
+        
+        # Verificar se arquivo de log existe
+        log_file = f"logs/log-{datetime.now().strftime('%Y%m%d')}.txt"
+        try:
+            with open(log_file, 'r') as f:
+                logs = f.read()
+                if "Login realizado com sucesso" in logs:
+                    print("✅ Log de login encontrado!")
+                else:
+                    print("❌ Log de login não encontrado")
+        except FileNotFoundError:
+            print("❌ Arquivo de log não encontrado")
+    else:
+        print(f"Erro no login: {response.status_code}")
+```
+
+### 2. 📝 Verificar Logs de Erro
+
+#### JavaScript/Fetch
+```javascript
+const checkErrorLogs = async () => {
+  try {
+    // Tentar login com credenciais inválidas
+    const response = await fetch('http://localhost:5210/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: "joao@exemplo.com",
+        senha: "senha_errada"
+      })
+    });
+    
+    if (response.status === 401) {
+      console.log('✅ Login falhado - verifique os logs em logs/log-{data}.txt');
+      console.log('Procure por: "Tentativa de login falhada para email"');
+    }
+  } catch (error) {
+    console.error('Erro ao testar login:', error);
+  }
+};
+```
+
+---
+
+## 🔧 Exemplos de Middleware
+
+### 1. 🛡️ Middleware de Tratamento Global de Exceções
+
+#### cURL
+```bash
+# Tentar acessar endpoint inexistente
+curl -X GET "http://localhost:5210/api/endpoint-inexistente"
+```
+
+#### JavaScript/Fetch
+```javascript
+const testGlobalExceptionMiddleware = async () => {
+  try {
+    const response = await fetch('http://localhost:5210/api/endpoint-inexistente');
+    
+    if (response.status === 404) {
+      const error = await response.json();
+      console.log('✅ Middleware de exceções funcionando:', error);
+    } else {
+      console.log('❌ Middleware de exceções não funcionando');
+    }
+  } catch (error) {
+    console.error('Erro ao testar middleware:', error);
+  }
+};
+```
+
+### 2. 🚫 Middleware de Blacklist JWT
+
+#### cURL
+```bash
+# Primeiro fazer logout
+curl -X POST "http://localhost:5210/api/auth/logout" \
+  -H "Authorization: Bearer {seu_token_jwt}"
+
+# Depois tentar usar o token blacklistado
+curl -X GET "http://localhost:5210/api/users/profile" \
+  -H "Authorization: Bearer {seu_token_jwt}"
+```
+
+#### JavaScript/Fetch
+```javascript
+const testBlacklistMiddleware = async (token) => {
+  try {
+    // Primeiro fazer logout
+    await fetch('http://localhost:5210/api/auth/logout', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    // Depois tentar usar o token blacklistado
+    const response = await fetch('http://localhost:5210/api/users/profile', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (response.status === 401) {
+      console.log('✅ Middleware de blacklist funcionando - token interceptado');
+    } else {
+      console.log('❌ Middleware de blacklist não funcionando');
+    }
+  } catch (error) {
+    console.error('Erro ao testar middleware de blacklist:', error);
+  }
+};
+```
+
+---
+
+## ⚠️ Exemplos de Tratamento de Exceções
+
+### 1. ❌ Usuário Não Encontrado
+
+#### cURL
+```bash
+curl -X GET "http://localhost:5210/api/users/999999" \
+  -H "Authorization: Bearer {seu_token_jwt}"
+```
+
+#### JavaScript/Fetch
+```javascript
+const testUserNotFound = async (token) => {
+  try {
+    const response = await fetch('http://localhost:5210/api/users/999999', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (response.status === 404) {
+      const error = await response.json();
+      console.log('✅ Tratamento de exceção funcionando:', error);
+    } else {
+      console.log('❌ Tratamento de exceção não funcionando');
+    }
+  } catch (error) {
+    console.error('Erro ao testar tratamento de exceção:', error);
+  }
+};
+```
+
+### 2. ❌ Nota Não Encontrada
+
+#### cURL
+```bash
+curl -X GET "http://localhost:5210/api/v1/notas/999999" \
+  -H "Authorization: Bearer {seu_token_jwt}"
+```
+
+#### JavaScript/Fetch
+```javascript
+const testNoteNotFound = async (token) => {
+  try {
+    const response = await fetch('http://localhost:5210/api/v1/notas/999999', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (response.status === 404) {
+      const error = await response.json();
+      console.log('✅ Tratamento de exceção funcionando:', error);
+    } else {
+      console.log('❌ Tratamento de exceção não funcionando');
+    }
+  } catch (error) {
+    console.error('Erro ao testar tratamento de exceção:', error);
+  }
+};
+```
+
+### 3. ❌ Acesso Negado a Nota
+
+#### cURL
+```bash
+# Criar nota com usuário A
+curl -X POST "http://localhost:5210/api/v1/notas" \
+  -H "Authorization: Bearer {token_usuario_a}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Nota do Usuário A",
+    "content": "Conteúdo da nota",
+    "isSensitive": false
+  }'
+
+# Tentar acessar nota com usuário B (deve falhar)
+curl -X GET "http://localhost:5210/api/v1/notas/1" \
+  -H "Authorization: Bearer {token_usuario_b}"
+```
+
+#### JavaScript/Fetch
+```javascript
+const testAccessDenied = async (tokenA, tokenB) => {
+  try {
+    // Criar nota com usuário A
+    const createResponse = await fetch('http://localhost:5210/api/v1/notas', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${tokenA}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        title: "Nota do Usuário A",
+        content: "Conteúdo da nota",
+        isSensitive: false
+      })
+    });
+    
+    if (createResponse.ok) {
+      const note = await createResponse.json();
+      
+      // Tentar acessar nota com usuário B
+      const accessResponse = await fetch(`http://localhost:5210/api/v1/notas/${note.id}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${tokenB}`
+        }
+      });
+      
+      if (accessResponse.status === 403) {
+        console.log('✅ Controle de acesso funcionando - acesso negado');
+      } else {
+        console.log('❌ Controle de acesso não funcionando');
+      }
+    }
+  } catch (error) {
+    console.error('Erro ao testar controle de acesso:', error);
+  }
+};
+```
+
+---
+
 ## 🔄 Automação de Testes
 
 ### 1. 🧪 Script de Teste Automatizado
@@ -1002,3 +2149,4 @@ if __name__ == "__main__":
 ![Status](https://img.shields.io/badge/Status-Ready%20to%20Use-green?style=for-the-badge)
 
 </div>
+

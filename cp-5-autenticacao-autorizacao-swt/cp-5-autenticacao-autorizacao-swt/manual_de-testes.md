@@ -13,6 +13,14 @@
 - [🔗 Acessando o Swagger UI](#-acessando-o-swagger-ui)
 - [🔐 Testes de Autenticação](#-testes-de-autenticação)
 - [👤 Testes de Usuários](#-testes-de-usuários)
+- [📝 Testes de Gestão de Notas](#-testes-de-gestão-de-notas)
+- [🔄 Testes de Refresh Tokens](#-testes-de-refresh-tokens)
+- [🚫 Testes de Sistema de Blacklist](#-testes-de-sistema-de-blacklist)
+- [👥 Testes de Sistema de Roles](#-testes-de-sistema-de-roles)
+- [✅ Testes de Validação de Dados](#-testes-de-validação-de-dados)
+- [📊 Testes de Logging](#-testes-de-logging)
+- [🔧 Testes de Middleware](#-testes-de-middleware)
+- [⚠️ Testes de Tratamento de Exceções](#️-testes-de-tratamento-de-exceções)
 - [🛡️ Testes de Segurança](#️-testes-de-segurança)
 - [📊 Relatório de Testes](#-relatório-de-testes)
 - [🔧 Troubleshooting](#-troubleshooting)
@@ -430,6 +438,427 @@ Authorization: Bearer {token_de_admin}
 #### Resultado Esperado
 - **Com Admin**: ![200](https://img.shields.io/badge/200-OK-green?style=flat-square) Lista de usuários
 - **Sem Admin**: ![403](https://img.shields.io/badge/403-Forbidden-red?style=flat-square) Acesso negado
+
+---
+
+## 📝 Testes de Gestão de Notas
+
+### 1. 📄 Criar Nova Nota (Editor/Admin)
+
+#### Endpoint
+```
+POST /api/v1/notas
+```
+
+#### Headers
+```
+Authorization: Bearer {seu_token_jwt}
+Content-Type: application/json
+```
+
+#### Body
+```json
+{
+  "title": "Reunião de Planejamento Q4",
+  "content": "Discussão sobre estratégias para o próximo trimestre...",
+  "isSensitive": true,
+  "tags": "planejamento,estratégia,confidencial"
+}
+```
+
+#### Teste no Swagger
+1. ![🔑](https://img.shields.io/badge/1-Authorize-red?style=flat-square) Autentique-se
+2. ![📝](https://img.shields.io/badge/2-Expandir%20notas-green?style=flat-square) Clique em `POST /api/v1/notas`
+3. ![▶️](https://img.shields.io/badge/3-Try%20it%20out-orange?style=flat-square) Clique em "Try it out"
+4. ![✏️](https://img.shields.io/badge/4-Inserir%20dados-blue?style=flat-square) Cole o JSON acima
+5. ![🚀](https://img.shields.io/badge/5-Execute-green?style=flat-square) Execute
+
+#### Resultado Esperado
+- **Status Code**: ![201](https://img.shields.io/badge/201-Created-green?style=flat-square)
+- **Response**: Dados da nota criada com ID
+
+### 2. 📋 Listar Notas do Usuário
+
+#### Endpoint
+```
+GET /api/v1/notas
+```
+
+#### Headers
+```
+Authorization: Bearer {seu_token_jwt}
+```
+
+#### Teste no Swagger
+1. ![🔑](https://img.shields.io/badge/1-Authorize-red?style=flat-square) Autentique-se
+2. ![📝](https://img.shields.io/badge/2-Expandir%20notas-green?style=flat-square) Clique em `GET /api/v1/notas`
+3. ![▶️](https://img.shields.io/badge/3-Try%20it%20out-orange?style=flat-square) Clique em "Try it out"
+4. ![🚀](https://img.shields.io/badge/4-Execute-green?style=flat-square) Execute
+
+#### Resultado Esperado
+- **Status Code**: ![200](https://img.shields.io/badge/200-OK-green?style=flat-square)
+- **Response**: Lista das notas do usuário autenticado
+
+### 3. 🔍 Buscar Nota por ID
+
+#### Endpoint
+```
+GET /api/v1/notas/{id}
+```
+
+#### Headers
+```
+Authorization: Bearer {seu_token_jwt}
+```
+
+#### Teste no Swagger
+1. ![🔑](https://img.shields.io/badge/1-Authorize-red?style=flat-square) Autentique-se
+2. ![📝](https://img.shields.io/badge/2-Expandir%20notas%2F%7Bid%7D-green?style=flat-square) Clique em `GET /api/v1/notas/{id}`
+3. ![▶️](https://img.shields.io/badge/3-Try%20it%20out-orange?style=flat-square) Clique em "Try it out"
+4. ![✏️](https://img.shields.io/badge/4-Inserir%20ID-blue?style=flat-square) Digite um ID válido (ex: 1)
+5. ![🚀](https://img.shields.io/badge/5-Execute-green?style=flat-square) Execute
+
+#### Resultado Esperado
+- **Status Code**: ![200](https://img.shields.io/badge/200-OK-green?style=flat-square)
+- **Response**: Dados da nota solicitada
+
+### 4. ✏️ Atualizar Nota (Editor/Admin)
+
+#### Endpoint
+```
+PUT /api/v1/notas/{id}
+```
+
+#### Headers
+```
+Authorization: Bearer {seu_token_jwt}
+Content-Type: application/json
+```
+
+#### Body
+```json
+{
+  "title": "Reunião de Planejamento Q4 - Atualizada",
+  "content": "Discussão sobre estratégias para o próximo trimestre... Atualizada com novas informações.",
+  "isSensitive": true,
+  "tags": "planejamento,estratégia,confidencial,atualizada"
+}
+```
+
+#### Teste no Swagger
+1. ![🔑](https://img.shields.io/badge/1-Authorize-red?style=flat-square) Autentique-se
+2. ![📝](https://img.shields.io/badge/2-Expandir%20notas%2F%7Bid%7D-green?style=flat-square) Clique em `PUT /api/v1/notas/{id}`
+3. ![▶️](https://img.shields.io/badge/3-Try%20it%20out-orange?style=flat-square) Clique em "Try it out"
+4. ![✏️](https://img.shields.io/badge/4-Inserir%20ID%20e%20dados-blue?style=flat-square) Digite ID e cole o JSON
+5. ![🚀](https://img.shields.io/badge/5-Execute-green?style=flat-square) Execute
+
+#### Resultado Esperado
+- **Status Code**: ![200](https://img.shields.io/badge/200-OK-green?style=flat-square)
+- **Response**: Dados da nota atualizada
+
+### 5. 🗑️ Deletar Nota (Editor/Admin)
+
+#### Endpoint
+```
+DELETE /api/v1/notas/{id}
+```
+
+#### Headers
+```
+Authorization: Bearer {seu_token_jwt}
+```
+
+#### Teste no Swagger
+1. ![🔑](https://img.shields.io/badge/1-Authorize-red?style=flat-square) Autentique-se
+2. ![📝](https://img.shields.io/badge/2-Expandir%20notas%2F%7Bid%7D-green?style=flat-square) Clique em `DELETE /api/v1/notas/{id}`
+3. ![▶️](https://img.shields.io/badge/3-Try%20it%20out-orange?style=flat-square) Clique em "Try it out"
+4. ![✏️](https://img.shields.io/badge/4-Inserir%20ID-blue?style=flat-square) Digite um ID válido
+5. ![🚀](https://img.shields.io/badge/5-Execute-green?style=flat-square) Execute
+
+#### Resultado Esperado
+- **Status Code**: ![204](https://img.shields.io/badge/204-No%20Content-green?style=flat-square)
+- **Response**: Nota deletada com sucesso
+
+---
+
+## 🔄 Testes de Refresh Tokens
+
+### 1. 🔄 Renovar Token de Acesso
+
+#### Endpoint
+```
+POST /api/auth/refresh-token
+```
+
+#### Headers
+```
+Content-Type: application/json
+```
+
+#### Body
+```json
+{
+  "refreshToken": "seu_refresh_token_aqui"
+}
+```
+
+#### Teste no Swagger
+1. ![📝](https://img.shields.io/badge/1-Expandir%20auth-green?style=flat-square) Clique em `POST /api/auth/refresh-token`
+2. ![▶️](https://img.shields.io/badge/2-Try%20it%20out-orange?style=flat-square) Clique em "Try it out"
+3. ![✏️](https://img.shields.io/badge/3-Inserir%20refresh%20token-blue?style=flat-square) Cole o refresh token
+4. ![🚀](https://img.shields.io/badge/4-Execute-green?style=flat-square) Execute
+
+#### Resultado Esperado
+- **Status Code**: ![200](https://img.shields.io/badge/200-OK-green?style=flat-square)
+- **Response**: Novo token JWT e refresh token
+
+### 2. ❌ Refresh Token Inválido
+
+#### Teste
+```json
+{
+  "refreshToken": "token_invalido_ou_expirado"
+}
+```
+
+#### Resultado Esperado
+- **Status Code**: ![401](https://img.shields.io/badge/401-Unauthorized-red?style=flat-square)
+- **Response**: Erro de token inválido
+
+---
+
+## 🚫 Testes de Sistema de Blacklist
+
+### 1. 🚪 Logout com Blacklist
+
+#### Endpoint
+```
+POST /api/auth/logout
+```
+
+#### Headers
+```
+Authorization: Bearer {seu_token_jwt}
+```
+
+#### Teste no Swagger
+1. ![🔑](https://img.shields.io/badge/1-Authorize-red?style=flat-square) Autentique-se
+2. ![📝](https://img.shields.io/badge/2-Expandir%20auth-green?style=flat-square) Clique em `POST /api/auth/logout`
+3. ![▶️](https://img.shields.io/badge/3-Try%20it%20out-orange?style=flat-square) Clique em "Try it out"
+4. ![🚀](https://img.shields.io/badge/4-Execute-green?style=flat-square) Execute
+
+#### Resultado Esperado
+- **Status Code**: ![200](https://img.shields.io/badge/200-OK-green?style=flat-square)
+- **Response**: Logout realizado com sucesso
+
+### 2. ❌ Tentar Usar Token Blacklistado
+
+#### Teste
+1. Faça logout de um token
+2. Tente usar o mesmo token em qualquer endpoint protegido
+
+#### Resultado Esperado
+- **Status Code**: ![401](https://img.shields.io/badge/401-Unauthorized-red?style=flat-square)
+- **Response**: Token inválido (está na blacklist)
+
+---
+
+## 👥 Testes de Sistema de Roles
+
+### 1. 👤 Teste com Role "Leitor"
+
+#### Cenário
+- Usuário com role "Leitor" tenta criar nota
+
+#### Endpoint
+```
+POST /api/v1/notas
+```
+
+#### Headers
+```
+Authorization: Bearer {token_de_leitor}
+```
+
+#### Resultado Esperado
+- **Status Code**: ![403](https://img.shields.io/badge/403-Forbidden-red?style=flat-square)
+- **Response**: Acesso negado - role insuficiente
+
+### 2. ✏️ Teste com Role "Editor"
+
+#### Cenário
+- Usuário com role "Editor" cria nota
+
+#### Resultado Esperado
+- **Status Code**: ![201](https://img.shields.io/badge/201-Created-green?style=flat-square)
+- **Response**: Nota criada com sucesso
+
+### 3. 👑 Teste com Role "Admin"
+
+#### Cenário
+- Usuário com role "Admin" acessa nota de outro usuário
+
+#### Endpoint
+```
+GET /api/v1/notas/{id_de_outro_usuario}
+```
+
+#### Resultado Esperado
+- **Status Code**: ![200](https://img.shields.io/badge/200-OK-green?style=flat-square)
+- **Response**: Acesso permitido (Admin tem acesso total)
+
+---
+
+## ✅ Testes de Validação de Dados
+
+### 1. ❌ Email Inválido no Registro
+
+#### Body
+```json
+{
+  "nome": "João Silva",
+  "email": "email_invalido",
+  "senha": "MinhaSenh@123",
+  "confirmarSenha": "MinhaSenh@123"
+}
+```
+
+#### Resultado Esperado
+- **Status Code**: ![400](https://img.shields.io/badge/400-Bad%20Request-red?style=flat-square)
+- **Response**: Erro de validação do email
+
+### 2. ❌ Senha Fraca
+
+#### Body
+```json
+{
+  "nome": "João Silva",
+  "email": "joao@exemplo.com",
+  "senha": "123",
+  "confirmarSenha": "123"
+}
+```
+
+#### Resultado Esperado
+- **Status Code**: ![400](https://img.shields.io/badge/400-Bad%20Request-red?style=flat-square)
+- **Response**: Erro de validação da senha
+
+### 3. ❌ Título de Nota Vazio
+
+#### Body
+```json
+{
+  "title": "",
+  "content": "Conteúdo da nota",
+  "isSensitive": false
+}
+```
+
+#### Resultado Esperado
+- **Status Code**: ![400](https://img.shields.io/badge/400-Bad%20Request-red?style=flat-square)
+- **Response**: Erro de validação do título
+
+---
+
+## 📊 Testes de Logging
+
+### 1. 📝 Verificar Logs de Login
+
+#### Teste
+1. Faça login com credenciais válidas
+2. Verifique o arquivo de log em `logs/log-{data}.txt`
+
+#### Resultado Esperado
+```json
+{
+  "Timestamp": "2024-01-01T10:00:00Z",
+  "Level": "Information",
+  "MessageTemplate": "Login realizado com sucesso para email: {Email}",
+  "Properties": {
+    "Email": "joao@exemplo.com",
+    "UserId": 1,
+    "SourceContext": "AuthController"
+  }
+}
+```
+
+### 2. 📝 Verificar Logs de Erro
+
+#### Teste
+1. Tente fazer login com credenciais inválidas
+2. Verifique o arquivo de log
+
+#### Resultado Esperado
+```json
+{
+  "Timestamp": "2024-01-01T10:00:00Z",
+  "Level": "Warning",
+  "MessageTemplate": "Tentativa de login falhada para email: {Email}",
+  "Properties": {
+    "Email": "joao@exemplo.com",
+    "SourceContext": "AuthController"
+  }
+}
+```
+
+---
+
+## 🔧 Testes de Middleware
+
+### 1. 🛡️ Middleware de Tratamento Global de Exceções
+
+#### Teste
+1. Faça uma requisição para um endpoint inexistente
+2. Verifique a resposta
+
+#### Resultado Esperado
+- **Status Code**: ![404](https://img.shields.io/badge/404-Not%20Found-red?style=flat-square)
+- **Response**: Erro formatado pelo middleware
+
+### 2. 🚫 Middleware de Blacklist JWT
+
+#### Teste
+1. Faça logout de um token
+2. Tente usar o token em qualquer endpoint protegido
+
+#### Resultado Esperado
+- **Status Code**: ![401](https://img.shields.io/badge/401-Unauthorized-red?style=flat-square)
+- **Response**: Token inválido (interceptado pelo middleware)
+
+---
+
+## ⚠️ Testes de Tratamento de Exceções
+
+### 1. ❌ Usuário Não Encontrado
+
+#### Endpoint
+```
+GET /api/users/999999
+```
+
+#### Resultado Esperado
+- **Status Code**: ![404](https://img.shields.io/badge/404-Not%20Found-red?style=flat-square)
+- **Response**: Usuário não encontrado
+
+### 2. ❌ Nota Não Encontrada
+
+#### Endpoint
+```
+GET /api/v1/notas/999999
+```
+
+#### Resultado Esperado
+- **Status Code**: ![404](https://img.shields.io/badge/404-Not%20Found-red?style=flat-square)
+- **Response**: Nota não encontrada
+
+### 3. ❌ Acesso Negado a Nota
+
+#### Cenário
+- Usuário tenta acessar nota de outro usuário (sem ser Admin)
+
+#### Resultado Esperado
+- **Status Code**: ![403](https://img.shields.io/badge/403-Forbidden-red?style=flat-square)
+- **Response**: Acesso negado
 
 ---
 

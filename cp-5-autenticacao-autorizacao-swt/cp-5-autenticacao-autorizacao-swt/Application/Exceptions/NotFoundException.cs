@@ -35,3 +35,4 @@ public class NotFoundException : BusinessException
         ResourceId = resourceId;
     }
 }
+

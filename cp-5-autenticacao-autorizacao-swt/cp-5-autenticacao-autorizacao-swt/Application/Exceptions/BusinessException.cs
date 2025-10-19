@@ -46,3 +46,4 @@ public class BusinessException : Exception
         Details = details;
     }
 }
+
